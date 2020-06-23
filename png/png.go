@@ -25,7 +25,6 @@ func NewPngScrubber(reader io.Reader) *PngScrubber {
 }
 
 func isMetadataType(chunkType []byte) bool {
-	// TODO: strip other chunk types??
 	for _, test := range chunkTypesToScrub {
 		if bytes.Equal(chunkType, []byte(test)) {
 			return true
@@ -76,9 +75,10 @@ func (self *PngScrubber) Read(buf []byte) (n int, err error) {
 	chunkReader := io.MultiReader(chunkHeaderBuffer, self.reader)
 
 	if isMetadataType(chunkType) {
-		_, err = io.CopyN(ioutil.Discard, chunkReader, chunkLength)
-		// TODO: this is actually a more nuanced situation than I had thought
-		//       we need to be guaranteed that this will advance the reader to the next chunk
+		if _, err = io.CopyN(ioutil.Discard, chunkReader, chunkLength); err != nil {
+			// TODO: reset here?
+			return
+		}
 	} else {
 		self.chunkData = io.LimitedReader{
 			R: chunkReader,

@@ -70,3 +70,15 @@ func TestScrubbingPngWithTextAuthor(t *testing.T) {
 func TestScrubbingPngWithXMPManufacturer(t *testing.T) {
 	compareImages(t, "kitten-with-xmp-manufacturer.png", "kitten-without-meta.png")
 }
+
+func TestScrubbingJpegWithoutExif(t *testing.T) {
+	compareImages(t, "kitten-without-meta.jpeg", "kitten-without-meta.jpeg")
+}
+
+func TestScrubbingJpegWithXmpDescription(t *testing.T) {
+	compareImages(t, "kitten-with-xmp-description.jpeg", "kitten-without-meta.jpeg")
+}
+
+func TestScrubbingJpegWithExifMake(t *testing.T) {
+	compareImages(t, "kitten-with-exif-make.jpeg", "kitten-without-meta.jpeg")
+}

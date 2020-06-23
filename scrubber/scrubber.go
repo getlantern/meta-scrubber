@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/getlantern/meta-scrubber/jpeg"
 	"github.com/getlantern/meta-scrubber/png"
 )
 
@@ -32,7 +33,9 @@ func GetScrubber(reader io.Reader) (io.Reader, error) {
 
 	if mimeType == "image/png" {
 		return png.NewPngScrubber(reader), nil
+	} else if mimeType == "image/jpeg" {
+		return jpeg.NewJpegScrubber(reader), nil
+	} else {
+		return reader, nil
 	}
-
-	return reader, nil
 }
