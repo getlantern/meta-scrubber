@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/getlantern/meta-scrubber/scrubber"
+	metascrubber "github.com/getlantern/meta-scrubber"
 	cli "github.com/jawher/mow.cli"
 )
 
@@ -25,7 +25,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("error opening file for writing: %v", err)
 		}
-		scrubberReader, err := scrubber.GetScrubber(inputFile)
+		scrubberReader, err := metascrubber.GetScrubber(inputFile)
 		if err != nil {
 			log.Fatalf("error getting scrubber : %v", err)
 		}

@@ -1,5 +1,5 @@
 // Scrubber provides a streaming metadata remover
-package scrubber
+package metascrubber
 
 import (
 	"bytes"

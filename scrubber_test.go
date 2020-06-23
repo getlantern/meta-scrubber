@@ -1,4 +1,4 @@
-package scrubber
+package metascrubber
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 )
 
 func loadBytes(t *testing.T, name string) []byte {
-	path := filepath.Join("../", "fixtures", name)
+	path := filepath.Join("./", "fixtures", name)
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
