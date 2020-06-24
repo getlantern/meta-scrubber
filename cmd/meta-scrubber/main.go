@@ -1,3 +1,4 @@
+// Command meta-scrubber is a CLI for scrubbing metadata from files
 package main
 
 import (

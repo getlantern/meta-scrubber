@@ -7,6 +7,6 @@ It is a WORK IN PROGRESS and currently provides ZERO guarantees and VERY limited
 
 ## cli usage
 ```
-$ go build -o ./meta-scrubber ./cli/main.go
+$ go build ./cmd/meta-scrubber
 $ ./meta-scrubber input-file.png output-file.png
 ```

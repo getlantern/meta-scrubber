@@ -7,10 +7,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func loadBytes(t *testing.T, name string) []byte {
-	path := filepath.Join("./", "fixtures", name)
+	path := filepath.Join("testdata", name)
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
@@ -21,24 +22,20 @@ func loadBytes(t *testing.T, name string) []byte {
 func TestScrubbingEmptyReader(t *testing.T) {
 	emptyReader := bytes.NewReader([]byte{})
 	emptyScrubber, err := GetScrubber(emptyReader)
-	if assert.NoError(t, err) {
-		actuallyRead, err := ioutil.ReadAll(emptyScrubber)
-		if assert.NoError(t, err) {
-			assert.Empty(t, actuallyRead)
-		}
-	}
+	require.NoError(t, err)
+	actuallyRead, err := ioutil.ReadAll(emptyScrubber)
+	require.NoError(t, err)
+	assert.Empty(t, actuallyRead)
 }
 
 func TestScrubbingShortReader(t *testing.T) {
 	shortBytes := []byte{0xbe, 0xef, 0xfe, 0xed}
 	shortReader := bytes.NewReader(shortBytes)
 	shortScrubber, err := GetScrubber(shortReader)
-	if assert.NoError(t, err) {
-		actuallyRead, err := ioutil.ReadAll(shortScrubber)
-		if assert.NoError(t, err) {
-			assert.Equal(t, shortBytes, actuallyRead)
-		}
-	}
+	require.NoError(t, err)
+	actuallyRead, err := ioutil.ReadAll(shortScrubber)
+	require.NoError(t, err)
+	assert.Equal(t, shortBytes, actuallyRead)
 }
 
 func compareImages(t *testing.T, originalFilename string, expectedFilename string) {
@@ -47,12 +44,10 @@ func compareImages(t *testing.T, originalFilename string, expectedFilename strin
 
 	imageReader := bytes.NewReader(originalImageBytes)
 	imageScrubber, err := GetScrubber(imageReader)
-	if assert.NoError(t, err) {
-		actuallyRead, err := ioutil.ReadAll(imageScrubber)
-		if assert.NoError(t, err) {
-			assert.Equal(t, expectedImageBytes, actuallyRead)
-		}
-	}
+	require.NoError(t, err)
+	actuallyRead, err := ioutil.ReadAll(imageScrubber)
+	require.NoError(t, err)
+	assert.Equal(t, expectedImageBytes, actuallyRead)
 }
 
 func TestScrubbingPngWithoutExif(t *testing.T) {
