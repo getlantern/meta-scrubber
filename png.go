@@ -58,6 +58,9 @@ func (pr *pngSegmentReader) nextSegment() (r io.Reader, isMetadata bool, err err
 	if pr.isMetadataType(chunkType) {
 		isMetadata = true
 		_, err = io.CopyN(ioutil.Discard, r, chunkLength)
+		if err != nil {
+			err = &MalformedDataError{"unable to read metadata png chunk", err}
+		}
 		return
 	}
 	return

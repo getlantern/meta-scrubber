@@ -59,7 +59,9 @@ func (jr *jpegSegmentReader) nextSegment() (r io.Reader, isMetadata bool, err er
 	if jr.isMetadataType(segmentMarker) {
 		isMetadata = true
 		_, err = io.CopyN(ioutil.Discard, r, segmentLength)
-		return
+		if err != nil {
+			err = &MalformedDataError{"unable to read&discard metadata jpeg segment", err}
+		}
 	}
 	return
 }
