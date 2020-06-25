@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
-	"io/ioutil"
 
 	pngimagestructure "github.com/dsoprea/go-png-image-structure"
 )
@@ -55,13 +54,6 @@ func (pr *pngSegmentReader) nextSegment() (r io.Reader, isMetadata bool, err err
 
 	r = io.LimitReader(io.MultiReader(chunkHeaderBuffer, pr.reader), chunkLength)
 
-	if pr.isMetadataType(chunkType) {
-		isMetadata = true
-		_, err = io.CopyN(ioutil.Discard, r, chunkLength)
-		if err != nil {
-			err = &MalformedDataError{"unable to read metadata png chunk", err}
-		}
-		return
-	}
+	isMetadata = pr.isMetadataType(chunkType)
 	return
 }

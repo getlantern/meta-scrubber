@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
-	"io/ioutil"
 
 	jpegimagestructure "github.com/dsoprea/go-jpeg-image-structure"
 )
@@ -56,12 +55,6 @@ func (jr *jpegSegmentReader) nextSegment() (r io.Reader, isMetadata bool, err er
 
 	r = io.LimitReader(io.MultiReader(segmentHeaderBuffer, jr.reader), segmentLength)
 
-	if jr.isMetadataType(segmentMarker) {
-		isMetadata = true
-		_, err = io.CopyN(ioutil.Discard, r, segmentLength)
-		if err != nil {
-			err = &MalformedDataError{"unable to read&discard metadata jpeg segment", err}
-		}
-	}
+	isMetadata = jr.isMetadataType(segmentMarker)
 	return
 }

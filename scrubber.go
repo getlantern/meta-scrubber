@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -56,7 +57,6 @@ func (e *MalformedDataError) Error() string { return e.Message + ": " + e.Err.Er
 
 type segmentReader interface {
 	// Returns io.EOF when no more segments exist.
-	// If isMetadata, r will be an empty reader
 	// The returned reader MUST be exhausted/read until EOF for further calls to nextSegment to be valid
 	nextSegment() (r io.Reader, isMetadata bool, err error)
 }
@@ -79,6 +79,10 @@ func (ms *metaScrubber) Read(p []byte) (n int, err error) {
 
 	for ms.segmentData, isMeta, err = ms.sr.nextSegment(); err == nil; ms.segmentData, isMeta, err = ms.sr.nextSegment() {
 		if isMeta {
+			if _, err = io.Copy(ioutil.Discard, ms.segmentData); err != nil {
+				err = &MalformedDataError{"unable to read and discard metadata segment", err}
+				return
+			}
 			continue
 		}
 		// Need to keep calling read until EOF, n >= len(p), or other error
