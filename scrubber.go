@@ -53,7 +53,13 @@ type MalformedDataError struct {
 }
 
 func (e *MalformedDataError) Unwrap() error { return e.Err }
-func (e *MalformedDataError) Error() string { return e.Message + ": " + e.Err.Error() }
+func (e *MalformedDataError) Error() string {
+	message := e.Message
+	if e.Err != nil {
+		message += ": " + e.Err.Error()
+	}
+	return message
+}
 
 type segmentReader interface {
 	// Returns io.EOF when no more segments exist.
