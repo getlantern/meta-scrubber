@@ -1,0 +1,3 @@
+[submodule "testdata/exif-samples"]
+	path = testdata/exif-samples
+	url = https://github.com/ianare/exif-samples.git

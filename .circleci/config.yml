@@ -17,6 +17,9 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run:
+          name: Update submodules
+          command: git submodule update --init
+      - run:
           name: Run tests
           command: go test ./... -v
 

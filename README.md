@@ -11,3 +11,13 @@ It is a WORK IN PROGRESS and currently provides ZERO guarantees and VERY limited
 $ go build ./cmd/meta-scrubber
 $ ./meta-scrubber input-file.png output-file.png
 ```
+
+## development
+metascrubber uses [exif-samples](https://github.com/ianare/exif-samples) as a image test corpus.
+In order to run tests on that corpus, you'll need to initialize the submodule:
+```
+$ git clone https://github.com/getlantern/meta-scrubber.git
+$ cd meta-scrubber
+$ git submodule update --init
+$ go test ./...
+```

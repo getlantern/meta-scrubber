@@ -2,7 +2,11 @@ package metascrubber
 
 import (
 	"bytes"
+	"image"
+	_ "image/jpeg"
+	_ "image/png"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -36,6 +40,37 @@ func TestScrubbingShortReader(t *testing.T) {
 	actuallyRead, err := ioutil.ReadAll(shortScrubber)
 	require.NoError(t, err)
 	assert.Equal(t, shortBytes, actuallyRead)
+}
+
+func TestImageValidity(t *testing.T) {
+	var files []string
+	var err error
+
+	root := "testdata"
+	err = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		ext := filepath.Ext(path)
+		if ext == ".jpeg" || ext == ".jpg" || ext == ".png" {
+			files = append(files, path)
+		}
+		return nil
+	})
+	require.NoError(t, err)
+	for _, file := range files {
+		t.Logf("decoding %v", file)
+		inputImage, err := os.Open(file)
+		require.NoError(t, err)
+		defer inputImage.Close()
+		_, _, err = image.Decode(inputImage)
+		if err == nil {
+			inputImage, err := os.Open(file)
+			defer inputImage.Close()
+			require.NoError(t, err)
+			scrubberReader, err := GetScrubber(inputImage)
+			require.NoError(t, err)
+			_, _, err = image.Decode(scrubberReader)
+			require.NoError(t, err)
+		}
+	}
 }
 
 func compareImages(t *testing.T, originalFilename string, expectedFilename string) {
