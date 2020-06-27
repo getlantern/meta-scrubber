@@ -100,6 +100,7 @@ func (jr *jpegSegmentReader) nextSegment() (r io.Reader, isMetadata bool, err er
 
 	// segment marker logic from:
 	// https://dev.exiv2.org/projects/exiv2/wiki/The_Metadata_in_JPEG_files
+	// https://github.com/dsoprea/go-jpeg-image-structure/blob/d40a386309d24fb714c60dcf1f5f88bff3ad9237/splitter.go#L219
 	var segmentLength int64
 
 	if bytes.Equal(segmentMarker, []byte{0xff, 0xd8}) {
@@ -113,8 +114,6 @@ func (jr *jpegSegmentReader) nextSegment() (r io.Reader, isMetadata bool, err er
 		// RST marker
 		segmentLength = 2
 	} else {
-		// TODO: double check potentially static-length markers????
-		// https://github.com/dsoprea/go-jpeg-image-structure/blob/d40a386309d24fb714c60dcf1f5f88bff3ad9237/splitter.go#L219
 		var segmentDataLength uint16
 		if err = binary.Read(teedReader, binary.BigEndian, &segmentDataLength); err != nil {
 			if !errors.Is(err, io.EOF) {
@@ -125,6 +124,7 @@ func (jr *jpegSegmentReader) nextSegment() (r io.Reader, isMetadata bool, err er
 
 		if bytes.Equal(segmentMarker, []byte{0xff, 0xda}) {
 			// SOS (start of scan) marker
+			// https://stackoverflow.com/questions/26715684/parsing-jpeg-sos-marker
 			jr.insideScan = true
 		}
 
