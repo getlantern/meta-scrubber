@@ -78,9 +78,13 @@ func (ms *metaScrubber) Read(p []byte) (n int, err error) {
 		isMeta bool
 	)
 
-	n, err = ms.segmentData.Read(p)
-	if (err != nil && !errors.Is(err, io.EOF)) || n >= len(p) {
-		return
+	// Need to exhaust segmentData by calling read until EOF, n >= len(p), or other error
+	for err == nil {
+		m, err = ms.segmentData.Read(p[n:])
+		n += m
+		if (err != nil && !errors.Is(err, io.EOF)) || n >= len(p) {
+			return
+		}
 	}
 
 	for ms.segmentData, isMeta, err = ms.sr.nextSegment(); err == nil; ms.segmentData, isMeta, err = ms.sr.nextSegment() {
@@ -91,7 +95,8 @@ func (ms *metaScrubber) Read(p []byte) (n int, err error) {
 			}
 			continue
 		}
-		// Need to keep calling read until EOF, n >= len(p), or other error
+
+		// Same as above
 		for err == nil {
 			m, err = ms.segmentData.Read(p[n:])
 			n += m
