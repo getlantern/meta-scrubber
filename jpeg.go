@@ -73,12 +73,7 @@ func (sr *scanReader) Read(p []byte) (n int, err error) {
 		}
 	}
 
-	var markerIndex int
-	if lastByteN == 1 {
-		markerIndex = firstMarker(append(p[:n], lastByte[0]))
-	} else {
-		markerIndex = firstMarker(p[:n])
-	}
+	markerIndex := firstMarker(append(p[:n], lastByte[:lastByteN]...))
 
 	if markerIndex >= 0 {
 		n = markerIndex
