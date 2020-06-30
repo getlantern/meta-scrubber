@@ -6,10 +6,13 @@ jobs:
 
     steps:
       - checkout
+      - run:
+          name: Get test corpus etag
+          command: curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz -I | grep -Fi ETag > /tmp/exif-image-corpus-etag
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
-            - exif-image-corpus-v1-{{ checksum ".git/modules/testdata/exif-image-corpus/refs/heads/master" }}
+            - exif-image-corpus-v1-{{ checksum "/tmp/exif-image-corpus-etag" }}
       - run:
           name: Build
           command: go build
@@ -18,10 +21,10 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run:
-          name: Update submodules
-          command: git submodule update --init
+          name: Get test corpus
+          command: curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz | tar -C ./testdata/exif-image-corpus -xzv
       - save_cache:
-          key: exif-image-corpus-v1-{{ checksum ".git/modules/testdata/exif-image-corpus/refs/heads/master" }}
+          key: exif-image-corpus-v1-{{ checksum "/tmp/exif-image-corpus-etag" }}
           paths:
             - "testdata/exif-image-corpus"
       - run:

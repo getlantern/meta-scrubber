@@ -13,11 +13,12 @@ $ ./meta-scrubber input-file.png output-file.png
 ```
 
 ## development
-metascrubber uses [exif-samples](https://github.com/ianare/exif-samples) and [exif-image-corpus](https://github.com/getlantern/exif-image-corpus) as a image test corpuses.
-In order to run tests on those corpuses, you'll need to initialize the submodule:
+metascrubber will run tests on any `.jpg` or `.png` images in `testdata`.
+There's a large (currently ~1GB) corpus for testing at https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz
+To download and test:
 ```
 $ git clone https://github.com/getlantern/meta-scrubber.git
 $ cd meta-scrubber
-$ git submodule update --init
-$ go test ./... -v
+$ curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz | tar -C ./testdata/exif-image-corpus -xzv
+$ go test . -v
 ```
