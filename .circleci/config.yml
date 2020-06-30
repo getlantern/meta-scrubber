@@ -3,6 +3,7 @@ jobs:
   test:
     docker:
       - image: circleci/golang:1.14
+    resource_class: medium+
 
     steps:
       - checkout
