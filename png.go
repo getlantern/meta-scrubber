@@ -43,17 +43,25 @@ func (pr *pngSegmentReader) nextSegment() (r io.Reader, isMetadata bool, err err
 		return
 	}
 
-	chunkType := make([]byte, 4)
-	if _, err = io.ReadFull(teedReader, chunkType); err != nil {
-		err = &MalformedDataError{"can't parse png chunk type", err}
-		return
-	}
+	var chunkLength int64
+	if chunkDataLength == 0 {
+		// apparently some chunks have a 0 here and then an EOF after
+		chunkLength = 4
+	} else {
+		chunkType := make([]byte, 4)
+		if _, err = io.ReadFull(teedReader, chunkType); err != nil {
+			if !errors.Is(err, io.EOF) {
+				err = &MalformedDataError{"can't parse png chunk type", err}
+			}
+			return
+		}
+		isMetadata = pr.isMetadataType(chunkType)
 
-	// 4 byte chunkType Header + 4 byte chunkDataLength Header + chunkDataLength + 4 byte CRC length
-	chunkLength := int64(12 + chunkDataLength)
+		// 4 byte chunkType Header + 4 byte chunkDataLength Header + chunkDataLength + 4 byte CRC length
+		chunkLength = int64(12 + chunkDataLength)
+	}
 
 	r = io.LimitReader(io.MultiReader(chunkHeaderBuffer, pr.reader), chunkLength)
 
-	isMetadata = pr.isMetadataType(chunkType)
 	return
 }
