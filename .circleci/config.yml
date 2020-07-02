@@ -15,7 +15,7 @@ jobs:
             - go-mod-v4-{{ checksum "go.sum" }}
       - restore_cache:
           keys:
-            - exif-image-corpus-v1-{{ checksum "/tmp/exif-image-corpus-etag" }}
+            - exif-image-corpus-v2-{{ checksum "/tmp/exif-image-corpus-etag" }}
       - run:
           name: Build
           command: go build
@@ -24,18 +24,13 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run:
-          name: Get test corpus if it's not cached
-          command: |
-            mkdir -p ./testdata/corpus
-            curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz | tar -C ./testdata/corpus -xzv
-            cp /tmp/exif-image-corpus-etag ./testdata/corpus.etag
-      - save_cache:
-          key: exif-image-corpus-v1-{{ checksum "/tmp/exif-image-corpus-etag" }}
-          paths:
-            - "testdata/corpus"
-      - run:
           name: Run tests
           command: go test . -v
+      - save_cache:
+          key: exif-image-corpus-v2-{{ checksum "testdata/corpus.etag" }}
+          paths:
+            - "testdata/corpus"
+            - "testdata/corpus.etag"
 
 workflows:
   version: 2
