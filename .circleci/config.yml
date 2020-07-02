@@ -9,7 +9,7 @@ jobs:
       - run:
           name: Get test corpus etag
           command: |
-            curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz -I | grep -Fi ETag | sed 's/ETag: //g' | sed 's/"//g' > /tmp/exif-image-corpus-etag
+            curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz -I | grep -Fi ETag | sed 's/ETag: //g' | tr -d '\r\n' > /tmp/exif-image-corpus-etag
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
