@@ -105,17 +105,16 @@ func checkImageValidity(t *testing.T, imageType string) {
 		inputImage, err := os.Open(file)
 		require.NoError(t, err)
 		_, _, err = image.Decode(inputImage)
+		require.NoErrorf(t, err, "could not decode %s before scrubbing, image is probably bad test file", file)
 		inputImage.Close()
-		if err == nil {
-			t.Logf("decoding %v", file)
-			inputImage, err := os.Open(file)
-			require.NoError(t, err)
-			scrubberReader, err := GetScrubber(inputImage)
-			require.NoError(t, err)
-			_, _, err = image.Decode(scrubberReader)
-			assert.NoErrorf(t, err, "could not decode %s after scrubbing", file)
-			inputImage.Close()
-		}
+		t.Logf("decoding %v", file)
+		inputImage, err = os.Open(file)
+		require.NoError(t, err)
+		scrubberReader, err := GetScrubber(inputImage)
+		require.NoError(t, err)
+		_, _, err = image.Decode(scrubberReader)
+		assert.NoErrorf(t, err, "could not decode %s after scrubbing", file)
+		inputImage.Close()
 	}
 }
 
