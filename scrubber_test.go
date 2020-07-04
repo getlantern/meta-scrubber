@@ -12,6 +12,7 @@ import (
 	_ "image/png"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -43,7 +44,7 @@ func init() {
 		return
 	}
 	if err := updateCorpus(os.Stderr); err != nil {
-		fmt.Fprintln(os.Stderr, "failed to update test corpus:", err)
+		log.Fatalf("failed to update test corpus: %v", err)
 	}
 }
 
