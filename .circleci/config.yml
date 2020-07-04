@@ -12,20 +12,20 @@ jobs:
             curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz -I | grep -Fi ETag | sed 's/ETag: //g' | tr -d '\r\n' > /tmp/exif-image-corpus-etag
       - restore_cache:
           keys:
-            - go-mod-v4-{{ checksum "go.sum" }}
+            - go-mod-v5-{{ checksum "go.sum" }}
       - restore_cache:
           keys:
             - exif-image-corpus-v2-{{ checksum "/tmp/exif-image-corpus-etag" }}
       - run:
           name: Build
           command: go build
-      - save_cache:
-          key: go-mod-v4-{{ checksum "go.sum" }}
-          paths:
-            - "/go/pkg/mod"
       - run:
           name: Run tests
           command: go test . -v
+      - save_cache:
+          key: go-mod-v5-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
       - save_cache:
           key: exif-image-corpus-v2-{{ checksum "testdata/corpus.etag" }}
           paths:
