@@ -34,7 +34,7 @@ jobs:
         tar -xzf /tmp/exif-image-corpus.tar.gz -C testdata/corpus
         cp /tmp/exif-image-corpus-etag testdata/corpus.etag
     - name: Run unit tests
-      run: go test -timeout 20m -race -v -failfast -coverprofile=profile.cov ./...
+      run: go test -timeout 20m -v -failfast -coverprofile=profile.cov ./...
     - name: Install goveralls
       run: go install github.com/mattn/goveralls@latest
     - name: Send coverage
