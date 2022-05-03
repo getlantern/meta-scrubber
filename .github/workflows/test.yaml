@@ -26,6 +26,13 @@ jobs:
           testdata/corpus.etag
         key: exif-image-corpus-v2-{{ hashFiles("/tmp/exif-image-corpus-etag") }}
         restore-keys: exif-image-corpus-v2-{{ hashFiles("/tmp/exif-image-corpus-etag") }}
+    - name: Download test corpus
+      if: steps.cache-test-corpus.cache-hit != "true"
+      run: |
+        curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz > /tmp/exif-image-corpus.tar.gz
+        mkdir testdata
+        tar -xzf /tmp/exif-image-corpus.tar.gz -C testdata
+        cp /tmp/exif-image-corpus-etag testdata/corpus.etag
     - name: Run unit tests
       run: go test -race -v -failfast -coverprofile=profile.cov ./...
     - name: Install goveralls
