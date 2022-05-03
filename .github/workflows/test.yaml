@@ -14,6 +14,18 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.18
+    - name: Get test corpus ETag
+      run: >-
+        curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz
+        -I | grep -Fi ETag | sed 's/ETag: //g' | tr -d '\r\n' > /tmp/exif-image-corpus-etag
+    - name: Cache test corpus
+      uses: actions/cache@v3
+      with:
+        path: |
+          testdata/corpus
+          testdata/corpus.etag
+        key: exif-image-corpus-v2-{{ hashFiles("/tmp/exif-image-corpus-etag") }}
+        restore-keys: exif-image-corpus-v2-{{ hashFiles("/tmp/exif-image-corpus-etag") }}
     - name: Run unit tests
       run: go test -race -v -failfast -coverprofile=profile.cov ./...
     - name: Install goveralls
