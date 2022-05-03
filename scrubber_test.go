@@ -91,6 +91,8 @@ func init() {
 }
 
 func checkImageValidity(t *testing.T, imageType string) {
+	t.Helper()
+
 	var files []string
 	var err error
 
@@ -109,19 +111,21 @@ func checkImageValidity(t *testing.T, imageType string) {
 	})
 	require.NoError(t, err)
 	for _, file := range files {
-		inputImage, err := os.Open(file)
-		require.NoError(t, err)
-		_, _, err = image.Decode(inputImage)
-		require.NoErrorf(t, err, "could not decode %s before scrubbing, image is probably bad test file", file)
-		inputImage.Close()
-		t.Logf("decoding %v at %v", file, time.Now().Sub(start))
-		inputImage, err = os.Open(file)
-		require.NoError(t, err)
-		scrubberReader, err := GetScrubber(inputImage)
-		require.NoError(t, err)
-		_, _, err = image.Decode(scrubberReader)
-		assert.NoErrorf(t, err, "could not decode %s after scrubbing", file)
-		inputImage.Close()
+		t.Run(file, func(t *testing.T) {
+			t.Parallel()
+			inputImage, err := os.Open(file)
+			require.NoError(t, err)
+			_, _, err = image.Decode(inputImage)
+			require.NoErrorf(t, err, "could not decode %s before scrubbing, image is probably bad test file", file)
+			inputImage.Close()
+			inputImage, err = os.Open(file)
+			require.NoError(t, err)
+			scrubberReader, err := GetScrubber(inputImage)
+			require.NoError(t, err)
+			_, _, err = image.Decode(scrubberReader)
+			assert.NoErrorf(t, err, "could not decode %s after scrubbing", file)
+			inputImage.Close()
+		})
 	}
 }
 
