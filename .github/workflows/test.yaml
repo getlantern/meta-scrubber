@@ -24,8 +24,8 @@ jobs:
         path: |
           testdata/corpus
           testdata/corpus.etag
-        key: exif-image-corpus-v2-{{ hashFiles("/tmp/exif-image-corpus-etag") }}
-        restore-keys: exif-image-corpus-v2-{{ hashFiles("/tmp/exif-image-corpus-etag") }}
+        key: exif-image-corpus-{{ hashFiles("/tmp/exif-image-corpus-etag") }}
+        restore-keys: exif-image-corpus-{{ hashFiles("/tmp/exif-image-corpus-etag") }}
     - name: Download test corpus
       if: steps.cache-test-corpus.cache-hit != 'true'
       run: |
@@ -34,7 +34,7 @@ jobs:
         tar -xzf /tmp/exif-image-corpus.tar.gz -C testdata/corpus
         cp /tmp/exif-image-corpus-etag testdata/corpus.etag
     - name: Run unit tests
-      run: go test -race -v -failfast -coverprofile=profile.cov ./...
+      run: go test -timeout 20m -race -v -failfast -coverprofile=profile.cov ./...
     - name: Install goveralls
       run: go install github.com/mattn/goveralls@latest
     - name: Send coverage
