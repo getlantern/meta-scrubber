@@ -30,8 +30,8 @@ jobs:
       if: steps.cache-test-corpus.cache-hit != 'true'
       run: |
         curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz > /tmp/exif-image-corpus.tar.gz
-        mkdir testdata
-        tar -xzf /tmp/exif-image-corpus.tar.gz -C testdata
+        mkdir -p testdata/corpus
+        tar -xzf /tmp/exif-image-corpus.tar.gz -C testdata/corpus
         cp /tmp/exif-image-corpus-etag testdata/corpus.etag
     - name: Run unit tests
       run: go test -race -v -failfast -coverprofile=profile.cov ./...
