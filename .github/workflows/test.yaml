@@ -19,6 +19,7 @@ jobs:
         curl https://meta-scrubber-test-corpus.s3.us-west-1.amazonaws.com/exif-image-corpus.tar.gz
         -I | grep -Fi ETag | sed 's/ETag: //g' | tr -d '\r\n' > /tmp/exif-image-corpus-etag
     - name: Cache test corpus
+      id: cache-test-corpus
       uses: actions/cache@v3
       with:
         path: |
@@ -33,8 +34,10 @@ jobs:
         mkdir -p testdata/corpus
         tar -xzf /tmp/exif-image-corpus.tar.gz -C testdata/corpus
         cp /tmp/exif-image-corpus-etag testdata/corpus.etag
+    # n.b. Usually we run the race detector in CI, but for some reason the race detector slows these
+    # tests down by a factor of 10 or 100 in GitHub Actions.
     - name: Run unit tests
-      run: go test -timeout 20m -v -failfast -coverprofile=profile.cov ./...
+      run: go test -v -failfast -coverprofile=profile.cov ./...
     - name: Install goveralls
       run: go install github.com/mattn/goveralls@latest
     - name: Send coverage
