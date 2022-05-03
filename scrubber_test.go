@@ -17,7 +17,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -82,12 +81,6 @@ func TestPngCorpusValidity(t *testing.T) {
 
 func TestJpgCorpusValidity(t *testing.T) {
 	checkImageValidity(t, "jpg")
-}
-
-var start time.Time
-
-func init() {
-	start = time.Now()
 }
 
 func checkImageValidity(t *testing.T, imageType string) {
