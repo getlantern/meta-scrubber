@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -83,6 +84,12 @@ func TestJpgCorpusValidity(t *testing.T) {
 	checkImageValidity(t, "jpg")
 }
 
+var start time.Time
+
+func init() {
+	start = time.Now()
+}
+
 func checkImageValidity(t *testing.T, imageType string) {
 	var files []string
 	var err error
@@ -107,7 +114,7 @@ func checkImageValidity(t *testing.T, imageType string) {
 		_, _, err = image.Decode(inputImage)
 		require.NoErrorf(t, err, "could not decode %s before scrubbing, image is probably bad test file", file)
 		inputImage.Close()
-		t.Logf("decoding %v", file)
+		t.Logf("decoding %v at %v", file, time.Now().Sub(start))
 		inputImage, err = os.Open(file)
 		require.NoError(t, err)
 		scrubberReader, err := GetScrubber(inputImage)
