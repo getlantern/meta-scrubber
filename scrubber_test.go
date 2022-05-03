@@ -129,6 +129,8 @@ func checkImageValidity(t *testing.T, imageType string) {
 	}
 }
 
+var foo = 3
+
 func compareImages(t *testing.T, originalFilename string, expectedFilename string) {
 	originalImageBytes := loadBytes(t, originalFilename)
 	expectedImageBytes := loadBytes(t, expectedFilename)
